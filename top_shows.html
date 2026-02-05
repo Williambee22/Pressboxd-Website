@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="topshows_page">
+
+  <div class="row between" style="margin-top:10px; align-items:flex-end;">
+    <div>
+      <div class="kicker">Rankings</div>
+      <h1 style="margin:6px 0 0;">
+        {% if mode == "bottom" %}Lowest Rated Shows{% else %}Top Shows{% endif %}
+      </h1>
+      <div class="muted small">
+        {% if mode == "bottom" %}
+          Sorted by lowest average rating (tie-break: most ratings).
+        {% else %}
+          Sorted by highest average rating (tie-break: most ratings).
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="seg" style="display:flex; gap:8px;">
+      <a class="btn ghost {% if mode != 'bottom' %}on{% endif %}" href="{{ url_for('top_shows', mode='top') }}">Top rated</a>
+      <a class="btn ghost {% if mode == 'bottom' %}on{% endif %}" href="{{ url_for('top_shows', mode='bottom') }}">Lowest rated</a>
+    </div>
+  </div>
+
+  {% if rows and rows|length > 0 %}
+    <div class="panel" style="margin-top:14px;">
+      <div class="stack">
+        {% for r in rows %}
+          <div class="ts_card">
+
+            <div class="ts_rank">#{{ loop.index }}</div>
+
+            <a class="ts_thumb" href="{{ url_for('show_detail', show_id=r['id']) }}">
+              {% if r["poster_url"] %}
+                <img src="{{ r['poster_url'] }}" alt="poster">
+              {% else %}
+                <div class="ts_thumb_fallback"></div>
+              {% endif %}
+            </a>
+
+            <div class="ts_meta">
+              <div class="ts_title">
+                <a href="{{ url_for('show_detail', show_id=r['id']) }}">{{ r["title"] }}</a>
+              </div>
+              <div class="muted small">{{ r["corps"] }} — {{ r["year"] }}</div>
+
+              <div class="ts_badges">
+                <div class="ts_avg">
+                    ★ {{ "%.2f"|format(r["avg_rating"]) }}
+                </div
+                <span class="badge muted">{{ r["cnt"] }} ratings</span>
+              </div>
+            </div>
+
+            <div class="ts_review">
+              <div class="kicker">Top review</div>
+
+              {% if r["top_review_text"] %}
+                <div class="row gap" style="align-items:center; margin-top:6px;">
+                  <span class="avatar_sm">
+                    {% if r["top_review_avatar_url"] %}
+                      <img src="{{ r['top_review_avatar_url'] }}" alt="avatar">
+                    {% else %}
+                      <span class="avatar_fallback"></span>
+                    {% endif %}
+                  </span>
+
+                  <div style="min-width:0;">
+                    <div class="row gap" style="align-items:baseline; flex-wrap:wrap;">
+                      <a class="reviewuser" href="{{ url_for('user_profile', username=r['top_review_username']) }}">
+                        {{ r["top_review_username"] }}
+                      </a>
+
+                      {% if r["top_review_rating_half"] is not none %}
+                        <span class="badge good">★ {{ "%.1f"|format(r["top_review_rating_half"] / 2.0) }}</span>
+                      {% else %}
+                        <span class="badge muted">No rating</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ts_quote_row">
+                  {% set vs = (r["top_review_score"] if r["top_review_score"] is not none else 0) %}
+                  <div class="ts_vote {% if vs > 0 %}pos{% elif vs < 0 %}neg{% else %}zero{% endif %}">
+                    {% if vs > 0 %}+{% endif %}{{ vs }}
+                  </div>
+
+                  <div class="muted small ts_quote">
+                    {{ r["top_review_text"] }}
+                  </div>
+                </div>
+
+              {% else %}
+                <div class="muted small" style="margin-top:6px;">No reviews yet.</div>
+              {% endif %}
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% else %}
+    <div class="panel" style="margin-top:14px;">
+      <div class="muted">No rated shows yet.</div>
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

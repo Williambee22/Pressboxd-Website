@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row between" style="margin-top:10px;">
+  <div>
+    <div class="kicker">Admin</div>
+    <h1 style="margin:6px 0 0;">Edit Show</h1>
+    <div class="muted small">Update metadata or the poster image URL.</div>
+  </div>
+  <a class="btn ghost" href="{{ url_for('show_detail', show_id=s['id']) }}">Back</a>
+</div>
+
+<div class="panel" style="margin-top:14px; max-width:720px;">
+  <form method="post" action="{{ url_for('admin_edit_show_post', show_id=s['id']) }}">
+    <div class="field">
+      <label>Title</label>
+      <input name="title" value="{{ s['title'] }}" required />
+    </div>
+
+    <div class="field">
+      <label>Corps</label>
+      <input name="corps" value="{{ s['corps'] }}" required />
+    </div>
+
+    <div class="field">
+      <label>Year</label>
+      <input name="year" value="{{ s['year'] }}" required />
+    </div>
+
+    <div class="field">
+      <label>Poster URL</label>
+      <input name="poster_url" value="{{ s['poster_url'] or '' }}" placeholder="https://..." />
+      <div class="muted small" style="margin-top:8px;">
+        Tip: use a direct image URL (ends in .jpg/.png/.webp) if possible.
+      </div>
+    </div>
+
+    {% if s["poster_url"] %}
+      <div style="margin-top:14px;">
+        <div class="kicker">Preview</div>
+        <div class="showposter" style="margin-top:10px;">
+          <img src="{{ s['poster_url'] }}" alt="poster preview">
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="actions" style="margin-top:16px;">
+      <button class="btn" type="submit">Save changes</button>
+      <a class="btn ghost" href="{{ url_for('show_detail', show_id=s['id']) }}">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

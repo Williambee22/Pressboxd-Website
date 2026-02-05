@@ -1,0 +1,44 @@
+<!-- =========================================================
+STEP 4 — templates/profile_customize.html (FULL FILE)
+Create: templates/profile_customize.html
+========================================================= -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row between" style="margin-top:10px;">
+  <div>
+    <div class="kicker">Settings</div>
+    <h1 style="margin:6px 0 0;">Customize Profile</h1>
+    <div class="muted small">Use direct image URLs. Theme must be a hex color like #4ea1ff.</div>
+  </div>
+  <a class="btn ghost" href="{{ url_for('me_profile') }}">Back</a>
+</div>
+
+<div class="panel" style="margin-top:14px; max-width:720px;">
+  <form method="post" action="{{ url_for('customize_profile_post') }}">
+    <div class="field">
+      <label>Avatar URL</label>
+      <input name="avatar_url" value="{{ u['avatar_url'] or '' }}" placeholder="https://.../avatar.png">
+    </div>
+
+    <div class="field">
+      <label>Banner URL</label>
+      <input name="banner_url" value="{{ u['banner_url'] or '' }}" placeholder="https://.../banner.jpg">
+    </div>
+
+    <div class="field">
+      <label>Theme Color</label>
+      <input name="theme_color" value="{{ u['theme_color'] or '' }}" placeholder="#4ea1ff">
+      <div class="muted small" style="margin-top:8px;">
+        Allowed format: <code>#RRGGBB</code> (example: <code>#22c55e</code>)
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:16px;">
+      <button class="btn" type="submit">Save</button>
+      <a class="btn ghost" href="{{ url_for('me_profile') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

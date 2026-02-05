@@ -1,0 +1,121 @@
+<!-- =========================================================
+STEP 5 — templates/profile.html (FULL FILE)
+Replace: templates/profile.html
+========================================================= -->
+{% extends "base.html" %}
+{% block content %}
+
+<div class="profile_hero"
+     {% if profile_user["banner_url"] %}style="--pBanner:url('{{ profile_user['banner_url'] }}');"{% endif %}>
+  <div class="profile_hero_inner"
+       {% if profile_user["theme_color"] %}style="--pAccent: {{ profile_user['theme_color'] }};"{% endif %}>
+    <div class="row gap" style="align-items:center;">
+      <div class="avatar_lg">
+        {% if profile_user["avatar_url"] %}
+          <img src="{{ profile_user['avatar_url'] }}" alt="avatar">
+        {% else %}
+          <div class="avatar_fallback"></div>
+        {% endif %}
+      </div>
+
+      <div>
+        <div class="kicker">Profile</div>
+        <h1 style="margin:6px 0 0;">{{ profile_user["username"] }}</h1>
+        {% if user_roles and user_roles|length > 0 %}
+        <div class="row gap" style="margin-top:10px; flex-wrap:wrap;">
+          {% for r in user_roles %}
+            <span class="role_tag"
+                  {% if r["color"] %}style="border-color: {{ r['color'] }}; color: {{ r['color'] }};"{% endif %}>
+              {{ r["name"] }}
+            </span>
+          {% endfor %}
+        </div>
+      {% endif %}
+        <div class="muted small">{% if is_me %}This is you.{% else %}{% endif %}</div>
+
+        {% if is_me %}
+          <div class="row gap" style="margin-top:10px;">
+            <a class="btn ghost" href="{{ url_for('customize_profile') }}">Customize</a>
+            <a class="btn ghost" href="{{ url_for('user_profile', username=profile_user['username']) }}">View public</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- small stats LEFT, big content RIGHT -->
+<div class="profile_layout" style="margin-top:16px;">
+
+  <aside class="profile_side">
+    <div class="panel profile_stats">
+      <div class="kicker">Stats</div>
+      <div class="muted small" style="margin-top:10px;">
+        Ratings shown: {{ recent_ratings|length }}<br/>
+        Reviews shown: {{ recent_reviews|length }}
+      </div>
+    </div>
+  </aside>
+
+  <section class="stack">
+    <div class="panel">
+      <div class="kicker">Recent ratings</div>
+
+      {% if recent_ratings and recent_ratings|length > 0 %}
+        <div class="postergrid" style="margin-top:12px;">
+          {% for rr in recent_ratings %}
+            <a class="poster" href="{{ url_for('show_detail', show_id=rr['show_id']) }}">
+              <div class="poster_art">
+                {% if rr["poster_url"] %}
+                  <img class="poster_img" src="{{ rr['poster_url'] }}" alt="{{ rr['title'] }} poster" loading="lazy">
+                {% else %}
+                  <div class="poster_fallback"></div>
+                {% endif %}
+                {% set rh = rr["rating_half"] if rr["rating_half"] is not none else 0 %}
+                <div class="tile_rating">
+                  <span class="tile_star">★</span> {{ "%.2f"|format(rh / 2.0) }}
+                </div>
+                <div class="tile_year">{{ rr["year"] }}</div>
+              </div>
+
+              <div class="poster_meta">
+                <div class="poster_title">{{ rr["title"] }}</div>
+                <div class="poster_sub">{{ rr["corps"] }}</div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="muted" style="margin-top:8px;">No ratings yet.</div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="kicker">Recent reviews</div>
+
+      {% if recent_reviews and recent_reviews|length > 0 %}
+        <div class="reviewlist" style="margin-top:12px;">
+          {% for rv in recent_reviews %}
+            <div class="reviewcard">
+              <div class="small">
+                <a class="reviewuser" href="{{ url_for('show_detail', show_id=rv['show_id']) }}">
+                  {{ rv["title"] }}
+                </a>
+                <span class="muted">• {{ rv["year"] }} — {{ rv["corps"] }}</span>
+                {% if rv["rating_half"] is not none %}
+                  <span class="muted">• ★ {{ "%.1f"|format(rv["rating_half"]/2.0) }}</span>
+                {% endif %}
+              </div>
+              <div class="reviewtext">{{ rv["review_text"] }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="muted" style="margin-top:8px;">No reviews yet.</div>
+      {% endif %}
+    </div>
+  </section>
+
+</div>
+
+{% endblock %}

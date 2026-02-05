@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row between" style="margin-top:10px;">
+  <div>
+    <div class="kicker">Admin</div>
+    <h1 style="margin:6px 0 0;">Roles</h1>
+    <div class="muted small">Create roles like “Verified Reviewer” and pick a display color.</div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px; max-width:720px;">
+  <form method="post" action="{{ url_for('admin_roles_post') }}">
+    <div class="field">
+      <label>Role name</label>
+      <input name="name" placeholder="Verified Reviewer" required>
+    </div>
+
+    <div class="field">
+      <label>Role color (#RRGGBB)</label>
+      <input name="color" placeholder="#22c55e">
+    </div>
+
+    <div class="actions">
+      <button class="btn green" type="submit">Create role</button>
+    </div>
+  </form>
+</div>
+
+<div class="panel" style="margin-top:14px;">
+  <div class="kicker">Existing roles</div>
+
+  {% if roles and roles|length > 0 %}
+    <div class="stack" style="margin-top:12px;">
+      {% for r in roles %}
+        <div class="row between" style="padding:10px; border:1px solid rgba(255,255,255,.07); border-radius:12px;">
+          <div class="row gap" style="align-items:center;">
+            <span class="role_tag"
+                  {% if r["color"] %}style="border-color: {{ r['color'] }}; color: {{ r['color'] }};"{% endif %}>
+              {{ r["name"] }}
+            </span>
+            <span class="muted small">{{ r["slug"] }}</span>
+          </div>
+
+          <form method="post" action="{{ url_for('admin_delete_role', role_id=r['id']) }}">
+            <a class="btn ghost" href="{{ url_for('admin_edit_role', role_id=r['id']) }}">Edit</a>
+            <button class="btn ghost" type="submit">Delete</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="muted" style="margin-top:10px;">No roles yet.</div>
+  {% endif %}
+</div>
+
+{% endblock %}

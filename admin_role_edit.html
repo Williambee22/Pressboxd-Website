@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row between" style="margin-top:10px;">
+  <div>
+    <div class="kicker">Admin</div>
+    <h1 style="margin:6px 0 0;">Edit role</h1>
+    <div class="muted small">Changes apply to everyone with this role.</div>
+  </div>
+  <a class="btn ghost" href="{{ url_for('admin_roles') }}">Back</a>
+</div>
+
+<div class="panel" style="margin-top:14px; max-width:720px;">
+  <form method="post" action="{{ url_for('admin_edit_role_post', role_id=r['id']) }}">
+    <div class="field">
+      <label>Role name</label>
+      <input name="name" value="{{ r['name'] }}" required>
+    </div>
+
+    <div class="field">
+      <label>Role color (#RRGGBB)</label>
+      <input name="color" value="{{ r['color'] or '' }}" placeholder="#22c55e">
+      <div class="muted small" style="margin-top:8px;">
+        Leave blank to use default text color.
+      </div>
+    </div>
+
+    <div class="actions" style="margin-top:16px;">
+      <button class="btn green" type="submit">Save changes</button>
+      <a class="btn ghost" href="{{ url_for('admin_roles') }}">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

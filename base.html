@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{{ title or "Pressboxd" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"/>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="wrap row between">
+      <a class="brand" href="{{ url_for('shows') }}">
+        <span class="dot"></span>
+        <span>Pressboxd</span>
+      </a>
+
+      <nav class="nav row">
+        <a href="{{ url_for('shows') }}">Shows</a>
+        <a href="{{ url_for('top_shows') }}">Top Shows</a>
+        {% if me and me["is_admin"] == 1 %}
+          <a href="{{ url_for('bulk_add') }}">Mass Add</a>
+          <a href="{{ url_for('admin_roles') }}">Roles</a>
+          {# optional: only if you added the lookup page #}
+          {# <a href="{{ url_for('admin_user_roles_lookup') }}">User roles</a> #}
+        {% endif %}
+      </nav>
+
+      <div class="auth row">
+        {% if me %}
+          <a class="nav_user" href="{{ url_for('me_profile') }}">
+            <span class="avatar_sm">
+              {% if me["avatar_url"] %}
+                <img src="{{ me['avatar_url'] }}" alt="avatar">
+              {% else %}
+                <span class="avatar_fallback"></span>
+              {% endif %}
+            </span>
+            <span class="muted small">{{ me["username"] }}</span>
+          </a>
+
+          <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Login</a>
+          <a class="btn" href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flashes">
+          {% for category, msg in messages %}
+            <div class="flash {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="wrap footer">
+    <div class="small">A Letterboxd-style tracker for drum corps shows.</div>
+  </footer>
+
+</body>
+</html>

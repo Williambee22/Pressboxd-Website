@@ -1,0 +1,255 @@
+<!-- =========================================================
+STEP 6B — templates/show_detail.html (FULL FILE)
+Replace: templates/show_detail.html
+(Reviews show avatar next to username + profile links)
++ NEW: Upvote/Downvote system UI for reviews
+========================================================= -->
+{% extends "base.html" %}
+{% block content %}
+
+  <div class="showhero {% if row['poster_url'] %}hasbanner{% endif %}"
+       {% if row['poster_url'] %}style="--banner:url('{{ row['poster_url'] }}');"{% endif %}>
+    <div class="showhero_inner">
+      <div class="showleft">
+        <div class="showposter">
+          {% if row["poster_url"] %}
+            <img src="{{ row['poster_url'] }}" alt="{{ row['title'] }} poster">
+          {% else %}
+            <div class="poster_fallback" style="border-radius:18px;"></div>
+          {% endif %}
+        </div>
+
+        <div class="showmeta">
+          <div class="kicker">Show</div>
+          <h1 style="margin:6px 0 8px;">{{ row["title"] }}</h1>
+          <div class="muted">{{ row["year"] }} — {{ row["corps"] }}</div>
+
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            {% if row["cnt"] == 0 %}
+              <span class="badge muted">Unrated</span>
+            {% else %}
+              <span class="badge good">★ {{ "%.2f"|format(row["avg_rating"]) }}</span>
+              <span class="badge muted">{{ row["cnt"] }} ratings</span>
+            {% endif %}
+
+            {% if me and me["is_admin"] == 1 %}
+              <a class="btn ghost" href="{{ url_for('admin_edit_show', show_id=row['id']) }}">Edit show</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="showright">
+        <div class="panel" style="box-shadow:none;">
+          {% if me %}
+            <div class="kicker">Your rating</div>
+
+            <form id="rateForm" method="post" action="{{ url_for('rate_show', show_id=row['id']) }}">
+              <input type="hidden" name="rating_half" id="ratingHalf"
+                     value="{{ my_rating if my_rating is not none else 0 }}"/>
+
+              <div class="starwrap" style="justify-content:flex-end;">
+                <div class="stars" id="stars"
+                     data-current="{{ my_rating if my_rating is not none else 0 }}"
+                     aria-label="Rate this show from 0 to 5 stars in half-star steps"
+                     role="slider"
+                     tabindex="0">
+                  <div class="stars-base">★★★★★</div>
+                  <div class="stars-fill" id="starsFill">★★★★★</div>
+                </div>
+
+                <div class="muted" id="ratingLabel" style="min-width:90px;"></div>
+              </div>
+            </form>
+
+            {% if my_rating is not none %}
+              <form method="post" action="{{ url_for('unrate_show', show_id=row['id']) }}" style="margin-top:10px;">
+                <button class="btn ghost" type="submit">Remove rating</button>
+              </form>
+            {% endif %}
+
+            <script>
+              (function(){
+                const stars = document.getElementById("stars");
+                const fill  = document.getElementById("starsFill");
+                const input = document.getElementById("ratingHalf");
+                const label = document.getElementById("ratingLabel");
+                const form  = document.getElementById("rateForm");
+
+                const current = parseInt(stars.dataset.current || "0", 10);
+                setDisplay(current);
+
+                function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+                function halfToText(rh){
+                  const val = (rh / 2).toFixed(rh % 2 ? 1 : 0);
+                  return val === "0" ? "0 ★" : (val + " ★");
+                }
+                function setDisplay(rh){
+                  const pct = (clamp(rh,0,10) / 10) * 100;
+                  fill.style.width = pct + "%";
+                  label.textContent = halfToText(clamp(rh,0,10));
+                }
+                function eventToHalf(e){
+                  const rect = stars.getBoundingClientRect();
+                  const x = clamp(e.clientX - rect.left, 0, rect.width);
+                  return clamp(Math.round((x / rect.width) * 10), 0, 10);
+                }
+
+                stars.addEventListener("mousemove", (e) => setDisplay(eventToHalf(e)));
+                stars.addEventListener("mouseleave", () => setDisplay(parseInt(input.value || "0", 10)));
+
+                stars.addEventListener("click", (e) => {
+                  const rh = eventToHalf(e);
+                  input.value = rh;
+                  setDisplay(rh);
+                  form.submit();
+                });
+
+                stars.addEventListener("keydown", (e) => {
+                  let rh = parseInt(input.value || "0", 10);
+                  if (e.key === "ArrowLeft")  rh = clamp(rh - 1, 0, 10);
+                  if (e.key === "ArrowRight") rh = clamp(rh + 1, 0, 10);
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    form.submit();
+                    return;
+                  }
+                  if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                    e.preventDefault();
+                    input.value = rh;
+                    setDisplay(rh);
+                  }
+                });
+              })();
+            </script>
+
+          {% else %}
+            <div class="muted">
+              <a href="{{ url_for('login', next=url_for('show_detail', show_id=row['id'])) }}">Log in</a>
+              to rate this show.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews + editor -->
+  <div class="layout" style="margin-top:18px;">
+
+    <!-- Left: community reviews -->
+    <section>
+      <div class="panel">
+        <div class="row between" style="margin-bottom:10px;">
+          <div>
+            <div class="kicker">Reviews</div>
+            <h2 style="margin:6px 0 0;">Community</h2>
+          </div>
+        </div>
+
+        {% if reviews and reviews|length > 0 %}
+          <div class="reviewlist">
+            {% for rv in reviews %}
+              <div class="reviewcard">
+                <div class="row between" style="gap:12px; align-items:flex-start;">
+
+                  <!-- Left: avatar + name + role + rating + text -->
+                  <div style="flex:1; min-width:0;">
+                    <div class="row gap" style="align-items:center; flex-wrap:wrap;">
+                      <span class="avatar_sm">
+                        {% if rv["avatar_url"] %}
+                          <img src="{{ rv['avatar_url'] }}" alt="avatar">
+                        {% else %}
+                          <span class="avatar_fallback"></span>
+                        {% endif %}
+                      </span>
+
+                      <a class="reviewuser"
+                        href="{{ url_for('user_profile', username=rv['username']) }}"
+                        {% if rv["role_color"] %}style="color: {{ rv['role_color'] }};"{% endif %}>
+                        {{ rv["username"] }}
+                      </a>
+
+                      {% if rv["role_name"] %}
+                        <span class="role_tag tiny"
+                              {% if rv["role_color"] %}style="border-color: {{ rv['role_color'] }}; color: {{ rv['role_color'] }};"{% endif %}>
+                          {{ rv["role_name"] }}
+                        </span>
+                      {% endif %}
+
+                      {% if rv["rating_half"] is not none %}
+                        <span class="muted"> ★ {{ "%.1f"|format(rv["rating_half"] / 2.0) }}</span>
+                      {% endif %}
+                    </div>
+
+                    <div class="reviewtext">{{ rv["review_text"] }}</div>
+                  </div>
+
+                  <!-- Right: vote controls -->
+                  <div class="review_votes" style="display:flex; align-items:center; gap:8px;">
+                    {% if me and (me["id"] != rv["user_id"]) %}
+                      <form method="post"
+                            action="{{ url_for('vote_review', show_id=row['id'], review_user_id=rv['user_id']) }}"
+                            style="margin:0;">
+                        <input type="hidden" name="vote" value="1">
+                        <button class="vote_btn {% if rv['my_vote'] == 1 %}on{% endif %}" type="submit">▲</button>
+                      </form>
+
+                      <div class="vote_score">{{ rv["vote_score"] }}</div>
+
+                      <form method="post"
+                            action="{{ url_for('vote_review', show_id=row['id'], review_user_id=rv['user_id']) }}"
+                            style="margin:0;">
+                        <input type="hidden" name="vote" value="-1">
+                        <button class="vote_btn {% if rv['my_vote'] == -1 %}on{% endif %}" type="submit">▼</button>
+                      </form>
+                    {% else %}
+                      <div class="vote_score">{{ rv["vote_score"] }}</div>
+                    {% endif %}
+                  </div>
+
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="muted">No reviews yet. Be the first to write one.</div>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Right: your review editor -->
+    <aside class="side" style="top:86px;">
+      <div class="panel">
+
+        {% if me %}
+          <form method="post" action="{{ url_for('review_show', show_id=row['id']) }}">
+            <div class="field">
+              <label>{% if my_review %}Edit your review{% else %}Write a review{% endif %}</label>
+              <textarea name="review_text" rows="10" placeholder="What did you think?">{{ my_review or "" }}</textarea>
+            </div>
+
+            <div class="actions">
+              <button class="btn green" type="submit">{% if my_review %}Save{% else %}Post{% endif %}</button>
+              <a class="btn ghost" href="{{ url_for('show_detail', show_id=row['id']) }}">Cancel</a>
+            </div>
+          </form>
+
+          {% if my_review %}
+            <form method="post" action="{{ url_for('delete_my_review', show_id=row['id']) }}" style="margin-top:10px;">
+              <button class="btn ghost" type="submit">Delete</button>
+            </form>
+          {% endif %}
+
+        {% else %}
+          <div class="muted">
+            <a href="{{ url_for('login', next=url_for('show_detail', show_id=row['id'])) }}">Log in</a>
+            to post a review.
+          </div>
+        {% endif %}
+      </div>
+    </aside>
+
+  </div>
+
+{% endblock %}

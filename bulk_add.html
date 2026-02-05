@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Mass Add Shows</h1>
+  <div class="muted" style="margin-bottom:10px;">
+    Paste lines as either <code>year, corps, title</code> OR <code>year|corps|title</code>.
+    Lines starting with <code>#</code> are ignored.
+  </div>
+
+  <form class="panel form" method="post" action="{{ url_for('bulk_add_post') }}">
+    <textarea name="bulk_text" rows="18" placeholder="2017, Blue Devils, Metamorph&#10;2016|Carolina Crown|Relentless"></textarea>
+    <button class="btn" type="submit">Import</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,114 @@
+{# =========================================================
+   templates/shows.html  (FULL FILE)
+   Home page grid of shows with filters + rating overlays
+   Safe against missing columns (cnt / avg_rating / poster_url)
+========================================================= #}
+
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row between" style="margin-top:10px;">
+  <div>
+    <div class="kicker">Shows</div>
+    <h1 style="margin:6px 0 0;">All Shows</h1>
+    <div class="muted small">Browse, sort, and click a show to rate and review.</div>
+  </div>
+</div>
+
+<div class="panel" style="margin-top:14px;">
+  <form method="get" action="{{ url_for('shows') }}" class="row gap" style="flex-wrap:wrap; align-items:flex-end;">
+    <div class="field" style="min-width:220px;">
+      <label>Sort</label>
+      <select name="sort">
+        <option value="" {% if not sort %}selected{% endif %}>Default</option>
+        <option value="year_new" {% if sort=='year_new' %}selected{% endif %}>Year (New → Old)</option>
+        <option value="year_old" {% if sort=='year_old' %}selected{% endif %}>Year (Old → New)</option>
+        <option value="top" {% if sort=='top' %}selected{% endif %}>Top Average Rating</option>
+        <option value="bottom" {% if sort=='bottom' %}selected{% endif %}>Lowest Average Rating</option>
+        <option value="corps" {% if sort=='corps' %}selected{% endif %}>Corps (A → Z)</option>
+      </select>
+    </div>
+
+    <div class="field" style="width:140px;">
+      <label>Year</label>
+      <input name="year" value="{{ year or '' }}" placeholder="2014">
+    </div>
+
+    <div class="field" style="min-width:240px;">
+      <label>Corps</label>
+      <input name="corps" value="{{ corps or '' }}" placeholder="Blue Devils">
+    </div>
+
+    <div class="actions">
+      <button class="btn green" type="submit">Apply</button>
+      <a class="btn ghost" href="{{ url_for('shows') }}">Reset</a>
+    </div>
+  </form>
+</div>
+
+{% if rows and rows|length > 0 %}
+  <div class="postergrid" style="margin-top:14px;">
+    {% for row in rows %}
+
+      {# --- safe field reads (sqlite3.Row supports keys()) --- #}
+      {% set keys = row.keys() %}
+      {% set poster = row["poster_url"] if "poster_url" in keys else "" %}
+      {% set yearv = row["year"] if "year" in keys else "" %}
+      {% set corpsv = row["corps"] if "corps" in keys else "" %}
+      {% set titlev = row["title"] if "title" in keys else "Untitled" %}
+      {% set cnt = row["cnt"] if "cnt" in keys and row["cnt"] is not none else 0 %}
+      {% if "avg_rating" in keys and row["avg_rating"] is not none %}
+        {% set avg = row["avg_rating"] %}
+      {% elif "avg" in keys and row["avg"] is not none %}
+        {% set avg = row["avg"] %}
+      {% else %}
+        {% set avg = 0 %}
+      {% endif %}
+
+      <a class="poster" href="{{ url_for('show_detail', show_id=row['id']) }}">
+        <div class="poster_art">
+          {% if poster %}
+            <img class="poster_img" src="{{ poster }}" alt="{{ titlev }} poster" loading="lazy">
+          {% else %}
+            <div class="poster_fallback"></div>
+          {% endif %}
+
+          {# Bottom-right year (text only) #}
+          {% if yearv %}
+            <div class="tile_year">{{ yearv }}</div>
+          {% endif %}
+
+          {# Bottom-left rating (big) OR unrated badge #}
+          {% if cnt and cnt > 0 %}
+            {% set pct = (avg / 5.0) %}
+          {% if pct < 0 %}{% set pct = 0 %}{% endif %}
+          {% if pct > 1 %}{% set pct = 1 %}{% endif %}
+
+          {# Nonlinear: redder faster, yellow only near the top #}
+          {% set curve = pct ** 2.6 %}     {# increase exponent => stays red longer #}
+          {% set hue = 60 * curve %}       {# 0=red, 60=yellow (no green) #}
+
+          <div class="tile_rating" style="color: hsl({{ hue }}, 98%, 62%);">
+            <span class="tile_star">★</span> {{ "%.2f"|format(avg) }}
+          </div>
+            <div class="tile_count">{{ cnt }} ratings</div>
+          {% else %}
+            <span class="badge unrated bottom_left">Unrated</span>
+          {% endif %}
+        </div>
+
+        <div class="poster_meta">
+          <div class="poster_title">{{ titlev }}</div>
+          <div class="poster_sub">{{ corpsv }}</div>
+        </div>
+      </a>
+
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="panel" style="margin-top:14px;">
+    <div class="muted">No shows found.</div>
+  </div>
+{% endif %}
+
+{% endblock %}
