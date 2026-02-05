@@ -678,9 +678,24 @@ def create_app() -> Flask:
     return app
 
 app = create_app()
+# app.py (inside create_app)
+import os
+from flask import Flask
 
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# If app.py is in /api, then project root is one level up.
+# If app.py is at repo root, this still works because ".." resolves safely.
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(PROJECT_ROOT, "templates"),
+    static_folder=os.path.join(PROJECT_ROOT, "static"),
+)
 
 if __name__ == "__main__":
     # Local dev only
     port = int(os.getenv("PORT", "5000"))
+
     app.run(host="0.0.0.0", port=port, debug=True)
