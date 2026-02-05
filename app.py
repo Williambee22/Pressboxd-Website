@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import db as dbx
+from app import app
 
 APP_SECRET = os.getenv("APP_SECRET", "dev-secret-change-me")
 DB_PATH = os.getenv("DC_SITE_DB", os.path.join(os.path.dirname(__file__), "site.db"))
@@ -677,4 +678,5 @@ def create_app() -> Flask:
 
 if __name__ == "__main__":
     app = create_app()
+
     app.run(debug=True)
