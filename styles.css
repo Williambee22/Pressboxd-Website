@@ -1,0 +1,944 @@
+:root{
+  /* matte, darker base */
+  --bg:#0c0f14;
+  --bg2:#0a0d12;
+
+  /* flatter surfaces */
+  --panel:#11151c;
+  --panel2:#0f131a;
+  --card:#11151c;
+
+  /* subtle separators */
+  --line:#222a36;
+  --line2:#2b3545;
+
+  --text:#e7ebf2;
+  --muted:#a3adbb;
+
+  /* calmer accents */
+  --accent:#6ea6ff;
+  --accent2:#9aa6b5; /* mostly unused now */
+
+  --good:#3ad07c;
+
+  /* much less “pill/rounded” */
+  --radius: 10px;
+  --radius2: 12px;
+
+  /* flatter shadows */
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: linear-gradient(180deg, var(--bg2), var(--bg));
+  color:var(--text);
+}
+
+a{ color:inherit; }
+.wrap{ max-width:1200px; margin:0 auto; padding:18px; }
+
+.row{ display:flex; align-items:center; gap:12px; }
+.between{ justify-content:space-between; }
+.gap{ gap:10px; }
+.stack{ display:flex; flex-direction:column; gap:10px; }
+
+.muted{ color:var(--muted); }
+.small{ font-size:13px; }
+.kicker{ font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+
+.topbar{
+  position:sticky; top:0; z-index:20;
+  background:rgba(7,10,16,.72);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(5px);
+}
+
+.brand{
+  text-decoration:none;
+  font-size: 28px;
+  font-weight:920;
+  letter-spacing:.16em;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.brand .dot{
+  width:10px; height:10px; border-radius:999px;
+  background:linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 0 4px rgba(78,161,255,.12);
+}
+
+.nav a{
+  text-decoration:none;
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius:12px;
+}
+.nav a:hover{ color:var(--text); background:rgba(255,255,255,.04); }
+
+.auth a{
+  text-decoration:none;
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius:12px;
+}
+.auth a:hover{ color:var(--text); background:rgba(255,255,255,.04); }
+
+.btn{
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);
+  color: var(--text);
+  padding:9px 12px;
+  border-radius: 10px;
+  font-weight: 900;
+  cursor:pointer;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:none;
+}
+.btn:hover{
+  background: rgba(255,255,255,.11);
+  border-color: rgba(255,255,255,.14);
+  transform: none;
+}
+.btn:active{ transform:none; }
+
+.btn.ghost{
+  background: transparent;
+  border:1px solid rgba(255,255,255,.10);
+  color: var(--text);
+}
+.btn.ghost:hover{
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.14);
+}
+
+.btn.primary{
+  border-color: rgba(110,166,255,.30);
+  background: rgba(110,166,255,.10);
+}
+.btn.primary:hover{
+  background: rgba(110,166,255,.14);
+  border-color: rgba(110,166,255,.38);
+}
+
+/* Green primary action button */
+.btn.green{
+  background: rgba(58, 208, 124, .16);   /* matte green */
+  border: 1px solid rgba(58, 208, 124, .40);
+  color: var(--text);
+}
+.btn.green:hover{
+  background: rgba(58, 208, 124, .22);
+  border-color: rgba(58, 208, 124, .52);
+}
+
+
+.panel{
+  background: rgba(17,21,28,.92);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius: var(--radius2);
+  padding:16px;
+  box-shadow: var(--shadow);
+}
+
+.flashes{ margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+.flash{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:12px 14px;
+  background:rgba(13,21,36,.7);
+}
+.flash.ok{ border-color:rgba(34,197,94,.35); }
+.flash.error{ border-color:rgba(239,68,68,.35); }
+.flash.warn{ border-color:rgba(234,179,8,.35); }
+
+.footer{
+  border-top:1px solid rgba(255,255,255,.06);
+  margin-top:32px;
+  padding-top:18px;
+  color:var(--muted);
+}
+
+/* --- layout: sidebar + content --- */
+.layout{
+  display:grid;
+  grid-template-columns: 360px 1fr;
+  gap:18px;
+  align-items:start;
+}
+@media (max-width: 980px){
+  .layout{ grid-template-columns: 1fr; }
+}
+
+/* sidebar */
+.side{
+  position:logical;
+  top:92px;
+}
+.side .panel{ padding:14px; }
+.field label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin:12px 0 6px;
+}
+.field input, .field select, textarea{
+  width:100%;
+  background: rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius: 10px;
+  padding:11px 12px;
+  color:var(--text);
+  outline:none;
+}
+.field input:focus, .field select:focus, textarea:focus{
+  border-color: rgba(255,255,255,.18);
+  box-shadow:none;
+}
+.actions{ display:flex; gap:10px; margin-top:14px; }
+.actions .btn{ flex:1; justify-content:center; }
+
+/* subnav pills (sort tabs) */
+.pills{ display:flex; flex-wrap:wrap; gap:10px; }
+.pilltab{
+  text-decoration:none;
+  color:var(--muted);
+  padding:8px 10px;
+  border-radius: 10px; /* not full pill */
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  font-weight:800;
+  font-size:13px;
+}
+.pilltab:hover{
+  color:var(--text);
+  border-color: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.05);
+}
+.pilltab.active{
+  color:var(--text);
+  border-color: rgba(110,166,255,.35);
+  background: rgba(110,166,255,.10);
+}
+
+/* grid like posters */
+.postergrid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap:14px;
+}
+
+.poster{
+  text-decoration:none;
+  border-radius: 12px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);
+  background: rgba(17,21,28,.65);
+  transition: border-color .12s ease, background .12s ease;
+}
+.poster:hover{
+  border-color: rgba(255,255,255,.12);
+  background: rgba(17,21,28,.78);
+  transform:none;
+  box-shadow:none;
+}
+
+.poster_art{
+  position:relative;
+  height:240px;
+  background:
+    radial-gradient(220px 140px at 30% 25%, rgba(78,161,255,.18), rgba(0,0,0,0)),
+    radial-gradient(220px 140px at 70% 15%, rgba(139,92,246,.14), rgba(0,0,0,0)),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.30));
+}
+
+.poster_img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit: contain;     /* IMPORTANT: shows full image */
+  background: rgba(0,0,0,.20);
+}
+
+.poster_fallback{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(240px 180px at 35% 25%, rgba(78,161,255,.22), rgba(0,0,0,0)),
+    radial-gradient(240px 180px at 70% 35%, rgba(139,92,246,.18), rgba(0,0,0,0)),
+    linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.32));
+}
+
+.poster_badges{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.badge{
+  font-size:12px;
+  font-weight:900;
+  border-radius:999px;
+  padding:6px 10px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(7,10,16,.50);
+  color:var(--text);
+}
+.badge.muted{ color:var(--muted); }
+.badge.good{ border-color: rgba(34,197,94,.35); background:rgba(34,197,94,.10); }
+
+.poster_meta{
+  padding:12px 12px 14px;
+}
+.poster_title{
+  font-weight:950;
+  line-height:1.15;
+  margin-bottom:6px;
+}
+.poster_sub{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.25;
+}
+
+
+.showhero,
+.profile_hero{
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,.07);
+}
+
+.showhero.hasbanner::before,
+.profile_hero::before{
+  opacity: .14;      /* lower */
+  filter: blur(6px); /* if you still want softness */
+}
+
+.showhero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.60));
+}
+
+.showhero_inner{
+  position:relative;
+  z-index:1;
+  padding:18px;
+  display:grid;
+  grid-template-columns: 1fr 360px; /* right column for rating */
+  gap:18px;
+  align-items:center;         /* middle-right placement */
+}
+
+@media (max-width: 980px){
+  .showhero_inner{ grid-template-columns: 1fr; }
+}
+
+.showleft{
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+
+.showposter{
+  width:180px;
+  height:250px;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+  flex: 0 0 auto;
+}
+
+.showposter img{
+  width:100%;
+  height:100%;
+  object-fit: contain;       /* IMPORTANT: fit full picture */
+  background: rgba(0,0,0,.25);
+}
+
+.showmeta{ min-width:0; }
+
+.showright{
+  display:flex;
+  justify-content:flex-end;  /* right side */
+  align-items:center;        /* middle vertically */
+}
+
+.poster_art{ position:relative; height:240px; overflow:hidden; }
+.poster_img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; display:block; }
+
+
+/* existing half-star widget styles (kept) */
+.starwrap{ display:flex; align-items:center; gap:14px; margin-top:8px; }
+.stars{ position:relative; display:inline-block; font-size:32px; line-height:1; cursor:pointer; user-select:none; outline:none; }
+.stars-base{ opacity:.25; }
+.stars-fill{ position:absolute; left:0; top:0; width:0%; overflow:hidden; white-space:nowrap; }
+.stars:focus{ box-shadow:0 0 0 4px rgba(78,161,255,.18); border-radius:12px; }
+
+
+
+/* Make banner/gradient overlays click-through */
+.showhero.hasbanner::before,
+.showhero::after{
+  pointer-events: none;
+}
+
+/* Ensure the actual content sits above overlays */
+.showhero_inner{
+  position: relative;
+  z-index: 2;
+}
+
+
+
+.showhero { position: relative; }
+
+/* Make sure left-side meta (incl. Edit show) is above any overlays/panels */
+.showleft,
+.showmeta{
+  position: relative;
+  z-index: 10;
+}
+
+/* In case the right panel is overlapping the left column */
+.showright{
+  position: relative;
+  z-index: 5;
+}
+
+
+/* Prevent poster block from covering the meta row */
+.showposter{
+  position: relative;
+  z-index: 1;
+}
+.showmeta{
+  z-index: 20;
+}
+
+
+/* --- Home tile: rating/year/count layout --- */
+
+/* Make sure the art area is a positioning context */
+.poster_art{
+  position:relative;
+}
+
+/* Big rating at bottom-left INSIDE image area */
+.tile_rating{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  font-weight:950;
+  font-size:18px;          /* bigger */
+  letter-spacing:.01em;
+  color: rgba(237, 200, 90, 0.95);   /* warm gold */
+  text-shadow: 0 2px 12px rgba(0,0,0,.65);
+}
+
+/* Optional styling for the "Unrated" label */
+.tile_rating.tile_unrated{
+  font-size:14px;
+  font-weight:900;
+  color: var(--muted);
+}
+
+/* Year at bottom-right INSIDE image area, plain text */
+.tile_year{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  font-weight:900;
+  font-size:13px;
+  color: rgba(230,234,242,.85);
+  background: transparent;   /* no background */
+  border: none;              /* no border */
+  padding: 0;                /* no pill padding */
+  text-shadow: 0 2px 12px rgba(0,0,0,.65);
+}
+
+/* Count at bottom-left of FULL tile (meta area), smaller */
+.tile_count{
+  margin-top:10px;
+  font-size:12px;            /* smaller */
+  color: var(--muted);
+}
+
+
+
+.reviewlist{ display:flex; flex-direction:column; gap:12px; }
+.reviewcard{
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(7,10,16,.35);
+  border-radius: 18px;
+  padding:12px 14px;
+}
+.reviewuser{
+  color: var(--text);
+  text-decoration:none;
+  font-weight:900;
+}
+.reviewuser:hover{ text-decoration:underline; }
+.reviewtext{
+  margin-top:10px;
+  white-space: pre-wrap;
+  line-height:1.45;
+  color: rgba(230,234,242,.92);
+}
+
+
+.profile_layout{
+  display:grid;
+  grid-template-columns: 220px 1fr;  /* small left, big right */
+  gap:18px;
+  align-items:start;
+}
+
+@media (max-width: 980px){
+  .profile_layout{ grid-template-columns: 1fr; }
+}
+
+.profile_side{
+  position: sticky;
+  top: 86px;
+}
+
+.profile_stats{
+  padding: 12px;           /* smaller panel */
+  border-radius: 18px;
+}
+
+
+
+/* --- avatars --- */
+.avatar_sm{
+  width:24px; height:24px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.25);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex: 0 0 auto;
+}
+.avatar_sm img{ width:100%; height:100%; object-fit:cover; display:block; }
+.avatar_lg{
+  width:72px; height:72px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.25);
+  box-shadow: 0 14px 40px rgba(0,0,0,.35);
+}
+.avatar_lg img{ width:100%; height:100%; object-fit:cover; display:block; }
+.avatar_fallback{
+  width:100%; height:100%;
+  background: radial-gradient(18px 18px at 40% 35%, rgba(78,161,255,.22), rgba(0,0,0,0)),
+              radial-gradient(20px 20px at 70% 65%, rgba(139,92,246,.18), rgba(0,0,0,0)),
+              rgba(255,255,255,.06);
+}
+
+/* clickable user in topbar */
+.nav_user{
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 8px;
+  border-radius:14px;
+}
+.nav_user:hover{ background:rgba(255,255,255,.04); }
+
+/* --- profile hero banner + theme --- */
+.profile_hero{
+  position:relative;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(10,16,28,.55);
+  box-shadow: var(--shadow);
+}
+
+.profile_hero::before{
+  content:"";
+  position:absolute;
+  inset:-40px;
+  background-image: var(--pBanner);
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px) saturate(1.05);
+  opacity: .18;
+  transform: scale(1.08);
+  pointer-events:none;
+}
+
+.profile_hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.60));
+  pointer-events:none;
+}
+
+.profile_hero_inner{
+  position:relative;
+  z-index:2;
+  padding:16px;
+  /* theme accent */
+  --pAccent: var(--accent);
+}
+
+.profile_hero_inner .btn{
+  background: linear-gradient(135deg, var(--pAccent), rgba(139,92,246,.9));
+}
+.profile_hero_inner .btn.ghost:hover{
+  border-color: color-mix(in srgb, var(--pAccent) 45%, rgba(255,255,255,.10));
+  background: color-mix(in srgb, var(--pAccent) 14%, rgba(78,161,255,.06));
+}
+
+.role_tag{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius: 10px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.03);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: .02em;
+}
+
+.role_tag.tiny{
+  padding:4px 8px;
+  font-size:11px;
+  border-radius: 9px;
+}
+
+
+
+/* =========================================================
+   SQUARE MODE — NO CURVED EDGES ANYWHERE
+   Put this at the BOTTOM of styles.css
+========================================================= */
+
+:root{
+  --radius: 0px;
+  --radius2: 0px;
+}
+
+/* hard override: kill all rounding */
+*,
+*::before,
+*::after{
+  border-radius: 0 !important;
+}
+
+/* also kill any clip rounding from overflow containers */
+.poster,
+.panel,
+.btn,
+.field input,
+.field select,
+textarea,
+.pilltab,
+.role_tag,
+.flash,
+.topbar,
+.brand,
+.nav_user,
+.showhero,
+.profile_hero,
+.showposter,
+.poster_art,
+.poster_img,
+.reviewcard{
+  border-radius: 0 !important;
+}
+
+/* avatars become square too */
+.avatar_sm,
+.avatar_lg,
+.avatar_sm img,
+.avatar_lg img,
+.avatar_fallback{
+  border-radius: 0 !important;
+}
+
+
+/* Text outline for home-tile overlays */
+.tile_year,
+.tile_rating,
+.badge.unrated{
+  /* real stroke (Chromium/Edge/Safari) */
+  -webkit-text-stroke: 0.25px rgba(0,0,0,.50);
+
+  /* universal fallback outline */
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.50),
+     0px -1px 0 rgba(0,0,0,.50),
+     1px -1px 0 rgba(0,0,0,.50),
+    -1px  0px 0 rgba(0,0,0,.50),
+     1px  0px 0 rgba(0,0,0,.50),
+    -1px  1px 0 rgba(0,0,0,.50),
+     0px  1px 0 rgba(0,0,0,.50),
+     1px  1px 0 rgba(0,0,0,.50);
+}
+
+
+
+/* Bigger star, but keep same color as the rating text */
+.tile_star{
+  color: inherit !important;
+  font-size: 24px;   /* adjust: 20–26 */
+  line-height: 1;
+  font-weight: 900;
+  position: relative;
+  top: 1px;
+}
+
+
+
+/* Unrated badge only: bottom-left overlay inside the poster tile */
+.badge.unrated.bottom_left{
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  top: auto;
+  right: auto;
+}
+
+
+/* Make dropdown (select) text readable */
+.field select{
+  color: var(--text) !important;
+  background: rgba(255,255,255,.06) !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+}
+
+/* The dropdown list items (important on Windows/Chrome) */
+.field select option{
+  color: #e7ebf2;      /* readable */
+  background: #0f131a; /* matte dark */
+}
+
+
+.review_votes{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+}
+
+.review_votes form{ margin:0; }
+
+.vote_btn{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  color: var(--text);
+  padding: 6px 10px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.vote_btn.on{
+  background: rgba(110,166,255,.14);
+  border-color: rgba(110,166,255,.35);
+}
+
+.vote_score{
+  min-width: 28px;
+  text-align:center;
+  font-weight: 900;
+}
+
+
+.top_quote{
+  opacity: .92;
+  font-style: italic;
+}
+
+
+
+
+/* Top Shows: vote score to the left of the quoted review */
+.top_review_row{
+  display:flex;
+  gap: 4px;
+  margin-top:-12px;
+  align-items:flex-start;
+  margin-left:-38px;
+}
+
+.vote_signed{
+  width:56px; 
+  margin-left:-14px;
+  margin-top:-11px;    
+  text-align:left;
+  font-weight:900;
+  font-size:18px;
+  line-height:1.1;
+  opacity:.95;
+}
+
+.vote_signed.pos{ color: rgba(120, 255, 140, .95); }  /* positive */
+.vote_signed.neg{ color: rgba(255, 120, 120, .95); }  /* negative */
+.vote_signed.zero{ color: rgba(200, 210, 225, .75); } /* zero */
+
+
+/* highlight active toggle button */
+.btn.ghost.on{
+  border-color: rgba(255,255,255,.30) !important;
+  background: rgba(255,255,255,.06) !important;
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   Top Shows page isolation
+   Prevent shared home-tile styles from leaking in here.
+========================================================= */
+.topshows_page .ts_card{
+  display:flex;
+  gap:12px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.07);
+  align-items:flex-start;
+}
+
+.topshows_page .ts_rank{
+  width:56px;
+  font-weight:900;
+  opacity:.9;
+}
+
+.topshows_page .ts_thumb{
+  width:70px;
+  flex:0 0 auto;
+}
+
+.topshows_page .ts_thumb img{
+  width:70px;
+  height:105px;
+  object-fit:cover;
+  display:block;
+}
+
+.topshows_page .ts_thumb_fallback{
+  width:70px;
+  height:105px;
+  background: rgba(255,255,255,.05);
+}
+
+.topshows_page .ts_meta{
+  flex:1;
+  min-width:0;
+}
+
+.topshows_page .ts_title{
+  font-weight:900;
+}
+
+.topshows_page .ts_badges{
+  margin-top:8px;
+  display:flex;
+  gap:10px;
+  font-size:10px;
+  flex-wrap:wrap;
+}
+
+.topshows_page .ts_review{
+  width:420px;
+  max-width:42vw;
+}
+
+/* vote number to left of quote */
+.topshows_page .ts_quote_row{
+  display:flex;
+  gap:14px;
+  margin-top:0px;
+  align-items:flex-start;
+}
+
+.topshows_page .ts_vote{
+  width:56px;
+  text-align:right;
+  font-weight:900;
+  font-size:20px;
+  margin-top: -24px;
+  margin-left: -72px;
+  line-height:1;
+  opacity:.95;
+}
+
+.topshows_page .ts_vote.pos{ color: rgba(120, 255, 140, .95); }
+.topshows_page .ts_vote.neg{ color: rgba(255, 120, 120, .95); }
+.topshows_page .ts_vote.zero{ color: rgba(200, 210, 225, .75); }
+
+/* quote nudge (adjust if you want) */
+.topshows_page .ts_quote{
+  margin-left: -82px;
+  white-space: pre-wrap;
+  line-height: 1.35;
+  font-size: 16px;
+  margin-top: -22px;
+}
+
+/* HARD BLOCK: if any home-page tile overlays accidentally appear on this page, hide them */
+.topshows_page .tile_year,
+.topshows_page .tile_rating,
+.topshows_page .tile_count,
+.topshows_page .badge.unrated,
+.topshows_page .postergrid,
+.topshows_page .poster,
+.topshows_page .poster_art,
+.topshows_page .poster_meta{
+  display:none !important;
+}
+
+
+
+/* Top Shows: big plain average rating (no badge) */
+.topshows_page .ts_avg{
+  font-weight: 900;
+  font-size: 22px;     /* bump to 20–22 if you want */
+  line-height: 1.1;
+  margin-top: 8px;
+}
+
+
+
+
+/* Top Shows: limit displayed review to N lines (does NOT limit actual review length) */
+.topshows_page .ts_quote{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;   /* <-- set how many lines you want */
+  overflow: hidden;
+}
+
+
+
+/* Show detail page: make community reviews column wider */
+.layout{
+  display: grid;
+  grid-template-columns: 0.55fr 0.95fr;  /* LEFT wider, RIGHT smaller */
+  gap: 16px;
+}
