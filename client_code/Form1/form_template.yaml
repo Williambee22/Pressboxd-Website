@@ -1,4 +1,8 @@
-components: []
+components:
+- layout_properties: {slot: default}
+  name: text_box_1
+  properties: {}
+  type: TextBox
 container:
   properties:
     html: |-
