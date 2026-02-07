@@ -1,3 +1,9 @@
+db_schema:
+  table_1:
+    client: none
+    columns: []
+    server: full
+    title: Table 1
 native_deps:
   head_html: |2
 
